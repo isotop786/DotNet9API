@@ -1,110 +1,81 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using DotNet9API.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace DotNet9API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class VideoGameController : ControllerBase
+    public class VideoGameController (VideoGameDbContext context) : ControllerBase
     {
-        static private List<VideoGame> videoGames = new List<VideoGame>
-        {
-                new VideoGame
-                {
-                    Id = 1,
-                    Title = "Spider-Man 2",
-                    Platform = "PS5",
-                    Developer = "Insomniac Games",
-                    Publisher = "Sony Interactive Entertainment"
-                },
-                new VideoGame
-                {
-                    Id = 2,
-                    Title = "The Legend of Zelda: Breath of the Wild",
-                    Platform = "Nintendo Switch",
-                    Developer = "Nintendo EPD",
-                    Publisher = "Nintendo"
-                },
-                new VideoGame
-                {
-                    Id = 3,
-                    Title = "God of War Ragnarök",
-                    Platform = "PS5",
-                    Developer = "Santa Monica Studio",
-                    Publisher = "Sony Interactive Entertainment"
-                },
-                new VideoGame
-                {
-                    Id = 4,
-                    Title = "Elden Ring",
-                    Platform = "PS5",
-                    Developer = "FromSoftware",
-                    Publisher = "Bandai Namco Entertainment"
-                },
-                new VideoGame
-                {
-                    Id = 5,
-                    Title = "Halo Infinite",
-                    Platform = "Xbox Series X",
-                    Developer = "343 Industries",
-                    Publisher = "Xbox Game Studios"
-                },
-                new VideoGame
-                {
-                    Id = 6,
-                    Title = "Starfield",
-                    Platform = "PC",
-                    Developer = "Bethesda Game Studios",
-                    Publisher = "Bethesda Softworks"
-                },
-                new VideoGame
-                {
-                    Id = 7,
-                    Title = "Super Mario Odyssey",
-                    Platform = "Nintendo Switch",
-                    Developer = "Nintendo EPD",
-                    Publisher = "Nintendo"
-                },
-                new VideoGame
-                {
-                    Id = 8,
-                    Title = "Cyberpunk 2077",
-                    Platform = "PC",
-                    Developer = "CD Projekt Red",
-                    Publisher = "CD Projekt"
-                },
-                new VideoGame
-                {
-                    Id = 9,
-                    Title = "Horizon Forbidden West",
-                    Platform = "PS5",
-                    Developer = "Guerrilla Games",
-                    Publisher = "Sony Interactive Entertainment"
-                },
-                new VideoGame
-                {
-                    Id = 10,
-                    Title = "Red Dead Redemption 2",
-                    Platform = "PS5",
-                    Developer = "Rockstar Games",
-                    Publisher = "Rockstar Games"
-                },
 
-        };
+        private readonly VideoGameDbContext _context = context;
+
 
         // get method
         [HttpGet]
-        public ActionResult<List<VideoGame>> GetVideoGames()
+        public async Task<ActionResult<List<VideoGame>>> GetVideoGames()
         {
-            return Ok(videoGames);
+            var games = await _context.VideoGames.ToListAsync();
+
+            return Ok(games);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<VideoGame> GetVideoGamebyId(int id)
+        public async Task<ActionResult<VideoGame>> GetVideoGamebyId(int id)
         {
-            var game = videoGames.FirstOrDefault(x => x.Id == id);
+            var game = await _context.VideoGames.FindAsync(id);
 
             return game;
         }
+
+        [HttpPost]
+        public async Task<ActionResult<VideoGame>> AddVideoGame(VideoGame newGame)
+        {
+            if (newGame is null)
+                return BadRequest();
+
+            _context.VideoGames.Add(newGame);
+
+            await _context.SaveChangesAsync();
+
+          
+            return CreatedAtAction(nameof(GetVideoGamebyId), new { id = newGame.Id }, newGame);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdatedVideoGame(int id, VideoGame updatedGame)
+        {
+            var game = await _context.VideoGames.FindAsync(id);
+            if (game is null)
+                return NotFound();
+
+            game.Title = updatedGame.Title;
+            game.Platform = updatedGame.Platform;
+            game.Publisher = updatedGame.Publisher;
+            game.Developer = updatedGame.Developer;
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task <IActionResult> DeleteVideoGame(int id)
+        {
+            var game = await _context.VideoGames.FindAsync(id);
+            if (game is null)
+                return NotFound();
+
+            _context.VideoGames.Remove(game);
+
+            await _context.SaveChangesAsync();
+           
+            return NoContent();
+
+        }
+
     }
 }
