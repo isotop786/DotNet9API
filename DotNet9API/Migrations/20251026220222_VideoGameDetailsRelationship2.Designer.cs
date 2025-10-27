@@ -4,6 +4,7 @@ using DotNet9API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DotNet9API.Migrations
 {
     [DbContext(typeof(VideoGameDbContext))]
-    partial class VideoGameDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251026220222_VideoGameDetailsRelationship2")]
+    partial class VideoGameDetailsRelationship2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,57 +24,6 @@ namespace DotNet9API.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("DotNet9API.Models.Developer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Developer");
-                });
-
-            modelBuilder.Entity("DotNet9API.Models.Genre", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Genre");
-                });
-
-            modelBuilder.Entity("DotNet9API.Models.Publisher", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Publisher");
-                });
 
             modelBuilder.Entity("DotNet9API.Models.VideoGame", b =>
                 {
@@ -81,23 +33,19 @@ namespace DotNet9API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("DeveloperId")
-                        .HasColumnType("int");
+                    b.Property<string>("Developer")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Platform")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PublisherId")
-                        .HasColumnType("int");
+                    b.Property<string>("Publisher")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DeveloperId");
-
-                    b.HasIndex("PublisherId");
 
                     b.ToTable("VideoGames");
 
@@ -105,61 +53,81 @@ namespace DotNet9API.Migrations
                         new
                         {
                             Id = 1,
+                            Developer = "Insomniac Games",
                             Platform = "PS5",
+                            Publisher = "Sony Interactive Entertainment",
                             Title = "Spider-Man 2"
                         },
                         new
                         {
                             Id = 2,
+                            Developer = "Nintendo EPD",
                             Platform = "Nintendo Switch",
+                            Publisher = "Nintendo",
                             Title = "The Legend of Zelda: Breath of the Wild"
                         },
                         new
                         {
                             Id = 3,
+                            Developer = "Santa Monica Studio",
                             Platform = "PS5",
+                            Publisher = "Sony Interactive Entertainment",
                             Title = "God of War Ragnarök"
                         },
                         new
                         {
                             Id = 4,
+                            Developer = "FromSoftware",
                             Platform = "PS5",
+                            Publisher = "Bandai Namco Entertainment",
                             Title = "Elden Ring"
                         },
                         new
                         {
                             Id = 5,
+                            Developer = "343 Industries",
                             Platform = "Xbox Series X",
+                            Publisher = "Xbox Game Studios",
                             Title = "Halo Infinite"
                         },
                         new
                         {
                             Id = 6,
+                            Developer = "Bethesda Game Studios",
                             Platform = "PC",
+                            Publisher = "Bethesda Softworks",
                             Title = "Starfield"
                         },
                         new
                         {
                             Id = 7,
+                            Developer = "Nintendo EPD",
                             Platform = "Nintendo Switch",
+                            Publisher = "Nintendo",
                             Title = "Super Mario Odyssey"
                         },
                         new
                         {
                             Id = 8,
+                            Developer = "CD Projekt Red",
                             Platform = "PC",
+                            Publisher = "CD Projekt",
                             Title = "Cyberpunk 2077"
                         },
                         new
                         {
                             Id = 9,
+                            Developer = "Guerrilla Games",
                             Platform = "PS5",
+                            Publisher = "Sony Interactive Entertainment",
                             Title = "Horizon Forbidden West"
                         },
                         new
                         {
                             Id = 10,
+                            Developer = "Rockstar Games",
                             Platform = "PS5",
+                            Publisher = "Rockstar Games",
                             Title = "Red Dead Redemption 2"
                         });
                 });
@@ -189,56 +157,11 @@ namespace DotNet9API.Migrations
                     b.ToTable("VideoGameDetails");
                 });
 
-            modelBuilder.Entity("GenreVideoGame", b =>
-                {
-                    b.Property<int>("GenresId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("VideoGamesId")
-                        .HasColumnType("int");
-
-                    b.HasKey("GenresId", "VideoGamesId");
-
-                    b.HasIndex("VideoGamesId");
-
-                    b.ToTable("GenreVideoGame");
-                });
-
-            modelBuilder.Entity("DotNet9API.Models.VideoGame", b =>
-                {
-                    b.HasOne("DotNet9API.Models.Developer", "Developer")
-                        .WithMany()
-                        .HasForeignKey("DeveloperId");
-
-                    b.HasOne("DotNet9API.Models.Publisher", "Publisher")
-                        .WithMany()
-                        .HasForeignKey("PublisherId");
-
-                    b.Navigation("Developer");
-
-                    b.Navigation("Publisher");
-                });
-
             modelBuilder.Entity("DotNet9API.Models.VideoGameDetails", b =>
                 {
                     b.HasOne("DotNet9API.Models.VideoGame", null)
                         .WithOne("VideoGameDetails")
                         .HasForeignKey("DotNet9API.Models.VideoGameDetails", "VideoGameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("GenreVideoGame", b =>
-                {
-                    b.HasOne("DotNet9API.Models.Genre", null)
-                        .WithMany()
-                        .HasForeignKey("GenresId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DotNet9API.Models.VideoGame", null)
-                        .WithMany()
-                        .HasForeignKey("VideoGamesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

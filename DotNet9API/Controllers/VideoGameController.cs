@@ -1,4 +1,5 @@
 ﻿using DotNet9API.Data;
+using DotNet9API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,12 @@ namespace DotNet9API.Controllers
         [HttpGet]
         public async Task<ActionResult<List<VideoGame>>> GetVideoGames()
         {
-            var games = await _context.VideoGames.ToListAsync();
+            var games = await _context.VideoGames
+                .Include(g => g.VideoGameDetails)
+                .Include(g => g.Developer)
+                .Include(g => g.Publisher)
+                .Include(g => g.Genres)
+                .ToListAsync();
 
             return Ok(games);
         }
@@ -41,7 +47,6 @@ namespace DotNet9API.Controllers
 
             await _context.SaveChangesAsync();
 
-          
             return CreatedAtAction(nameof(GetVideoGamebyId), new { id = newGame.Id }, newGame);
         }
 

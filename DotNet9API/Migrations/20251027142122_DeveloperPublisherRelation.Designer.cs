@@ -4,6 +4,7 @@ using DotNet9API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DotNet9API.Migrations
 {
     [DbContext(typeof(VideoGameDbContext))]
-    partial class VideoGameDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251027142122_DeveloperPublisherRelation")]
+    partial class DeveloperPublisherRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,23 +40,6 @@ namespace DotNet9API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Developer");
-                });
-
-            modelBuilder.Entity("DotNet9API.Models.Genre", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Genre");
                 });
 
             modelBuilder.Entity("DotNet9API.Models.Publisher", b =>
@@ -189,21 +175,6 @@ namespace DotNet9API.Migrations
                     b.ToTable("VideoGameDetails");
                 });
 
-            modelBuilder.Entity("GenreVideoGame", b =>
-                {
-                    b.Property<int>("GenresId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("VideoGamesId")
-                        .HasColumnType("int");
-
-                    b.HasKey("GenresId", "VideoGamesId");
-
-                    b.HasIndex("VideoGamesId");
-
-                    b.ToTable("GenreVideoGame");
-                });
-
             modelBuilder.Entity("DotNet9API.Models.VideoGame", b =>
                 {
                     b.HasOne("DotNet9API.Models.Developer", "Developer")
@@ -224,21 +195,6 @@ namespace DotNet9API.Migrations
                     b.HasOne("DotNet9API.Models.VideoGame", null)
                         .WithOne("VideoGameDetails")
                         .HasForeignKey("DotNet9API.Models.VideoGameDetails", "VideoGameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("GenreVideoGame", b =>
-                {
-                    b.HasOne("DotNet9API.Models.Genre", null)
-                        .WithMany()
-                        .HasForeignKey("GenresId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DotNet9API.Models.VideoGame", null)
-                        .WithMany()
-                        .HasForeignKey("VideoGamesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
